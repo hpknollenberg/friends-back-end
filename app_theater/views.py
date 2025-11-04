@@ -319,6 +319,23 @@ def edit_post(request):
       return Response(edit_post_serialized.data)
    
 
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def edit_profile(request):
+   user = request.user
+   profile = user.profile
+   if request.data['first_name'] != profile.first_name and request.data['first_name'] != "":
+      profile.first_name = request.data['first_name']
+   if request.data['last_name'] != profile.last_name and request.data['last_name'] != "":
+      profile.last_name = request.data['last_name']
+   if request.data['profile_picture'] != "":
+      profile.profile_picture = request.data['profile_picture']
+      profile.save(update_fields=['profile_picture'])
+   edit_profile_serialized = ProfileSerializer(profile)
+   return Response(edit_profile_serialized.data)
+   
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_comments(request):
@@ -380,8 +397,8 @@ def get_posts(request):
 def get_profile(request):
     user = request.user
     profile = user.profile
-    serializer = ProfileSerializer(profile, many=False)
-    return Response(serializer.data)
+    profile_serialized = ProfileSerializer(profile, many=False)
+    return Response(profile_serialized.data)
 
 
 @api_view(['GET'])
