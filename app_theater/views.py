@@ -332,6 +332,8 @@ def edit_profile(request):
    if request.data['profile_picture'] != "":
       profile.profile_picture = request.data['profile_picture']
       profile.save(update_fields=['profile_picture'])
+   if request.data['bio'] != profile.bio:
+      profile.bio = request.data['bio']
    edit_profile_serialized = ProfileSerializer(profile)
    return Response(edit_profile_serialized.data)
    
