@@ -327,13 +327,42 @@ def edit_profile(request):
    profile = user.profile
    if request.data['first_name'] != profile.first_name and request.data['first_name'] != "":
       profile.first_name = request.data['first_name']
+      profile.save(update_fields=['first_name'])
    if request.data['last_name'] != profile.last_name and request.data['last_name'] != "":
       profile.last_name = request.data['last_name']
+      profile.save(update_fields=['last_name'])
    if request.data['profile_picture'] != "":
       profile.profile_picture = request.data['profile_picture']
       profile.save(update_fields=['profile_picture'])
-   if request.data['bio'] != profile.bio:
-      profile.bio = request.data['bio']
+   if request.data['profile_bio'] != profile.profile_bio:
+      profile.profile_bio = request.data['profile_bio']
+      profile.save(update_fields=['profile_bio'])
+   edit_profile_serialized = ProfileSerializer(profile)
+   return Response(edit_profile_serialized.data)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def edit_profile_bio(request):
+   user = request.user
+   profile = user.profile
+   if request.data['profile_bio'] != "":
+      profile.profile_bio = request.data['profile_bio']
+      profile.save(update_fields=['profile_bio'])
+   edit_profile_serialized = ProfileSerializer(profile)
+   return Response(edit_profile_serialized.data)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def edit_profile_picture(request):
+   user = request.user
+   profile = user.profile
+   if request.data['profile_picture'] != "":
+      profile.profile_picture = request.data['profile_picture']
+      profile.save(update_fields=['profile_picture'])
    edit_profile_serialized = ProfileSerializer(profile)
    return Response(edit_profile_serialized.data)
    

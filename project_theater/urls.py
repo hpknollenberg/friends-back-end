@@ -50,6 +50,8 @@ urlpatterns = [
     path('edit-menu-item/', edit_menu_item),
     path('edit-post/', edit_post),
     path('edit-profile/', edit_profile),
+    path('edit-profile-bio/', edit_profile_bio),
+    path('edit-profile-picture/', edit_profile_picture),
     path('get-comments/', get_comments),
     path('get-discussions/', get_discussions),
     path('get-events/', get_events),

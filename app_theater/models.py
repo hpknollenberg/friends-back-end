@@ -7,7 +7,7 @@ class Profile(models.Model):
     first_name = models.TextField()
     last_name = models.TextField()
     profile_picture = models.ImageField(upload_to='images/', blank=True, null=True)
-    bio = models.TextField(default="")
+    profile_bio = models.TextField(default="")
     is_admin = models.BooleanField(default=False)
 
     def __str__(self):
