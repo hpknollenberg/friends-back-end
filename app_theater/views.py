@@ -10,29 +10,8 @@ from .models import *
 from .serializers import *
 
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def create_comment(request):
-   Comment.objects.create(
-      author = Profile.objects.get(id=request.data['author']),
-      content = request.data['content'],
-      discussion = Discussion.objects.get(id=request.data['discussion']),
-   )
-   return Response()
 
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-@parser_classes([MultiPartParser, FormParser])
-def create_discussion(request):
-   if request.data['is_admin'] == 'true':
-      Discussion.objects.create(
-         author = Profile.objects.get(id=request.data['author']),
-         name = request.data['name'],
-         description = request.data['description'],
-         image = request.data['image']
-      )
-      return Response()
 
 
 @api_view(['POST'])
@@ -75,6 +54,19 @@ def create_menu_item(request):
          price = request.data['price']
       )
       return Response()
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def create_message(request):
+   message = Message.objects.create(
+      author = Profile.objects.get(id=request.data['author']),
+      content = request.data['content'],
+      image = request.data['image']
+   )
+   message_serialized = MessageSerializer(message, many=False)
+   return Response(message_serialized.data)
 
 
 @api_view(['POST'])
@@ -173,15 +165,6 @@ def delete_comment(request):
    comment = Comment.objects.get(id=request.data['comment'])
    comment.delete()
    return Response()
-      
-
-@api_view(['DELETE'])
-@permission_classes([IsAuthenticated])
-def delete_discussion(request):
-   if request.data['is_admin'] == True:
-      discussion = Discussion.objects.get(id=request.data['discussion'])
-      discussion.delete()
-      return Response()
    
 
 @api_view(['DELETE'])
@@ -210,6 +193,15 @@ def delete_menu_item(request):
       menu_item = MenuItem.objects.get(id=request.data['menu_item'])
       menu_item.delete()
       return Response()
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_message(request):
+   message = Message.objects.get(id=request.data['message'])
+   message.delete()
+   message_serialized = MessageSerializer(message, many=False)
+   return Response(message_serialized.data)
 
 
 @api_view(['DELETE'])
@@ -371,10 +363,10 @@ def get_comments(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_discussions(request):
-   discussions = Discussion.objects.all().order_by('-created_at')
-   discussions_serialized = DiscussionSerializer(discussions, many=True)
-   return Response(discussions_serialized.data)
+def get_messages(request):
+   messages = Message.objects.all().order_by('-created_at')
+   messages_serialized = MessageSerializer(messages, many=True)
+   return Response(messages_serialized.data)
 
 
 @api_view(['GET'])
