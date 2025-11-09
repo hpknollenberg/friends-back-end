@@ -51,6 +51,7 @@ urlpatterns = [
     path('edit-profile-bio/', edit_profile_bio),
     path('edit-profile-name/', edit_profile_name),
     path('edit-profile-picture/', edit_profile_picture),
+    path('edit-username/', edit_username),
     path('get-comments/', get_comments),
     path('get-events/', get_events),
     path('get-films/', get_films),

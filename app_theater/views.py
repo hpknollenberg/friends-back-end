@@ -351,6 +351,18 @@ def edit_profile_picture(request):
       profile.save(update_fields=['profile_picture'])
    edit_profile_serialized = ProfileSerializer(profile)
    return Response(edit_profile_serialized.data)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def edit_username(request):
+   user = request.user
+   if request.data['username'] != "" and request.data['username'] != user.username:
+      user.username = request.data['username']
+      user.save(update_fields=['username'])
+   edit_user_serialized = UserSerializer(user)
+   return Response(edit_user_serialized.data)
    
 
 @api_view(['GET'])
@@ -364,7 +376,7 @@ def get_comments(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_messages(request):
-   messages = Message.objects.all().order_by('-created_at')
+   messages = Message.objects.all().order_by('created_at')
    messages_serialized = MessageSerializer(messages, many=True)
    return Response(messages_serialized.data)
 
