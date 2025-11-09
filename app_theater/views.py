@@ -317,28 +317,6 @@ def edit_post(request):
         post.save(update_fields=['image'])
       edit_post_serialized = PostSerializer(post)
       return Response(edit_post_serialized.data)
-   
-
-@api_view(['PUT'])
-@permission_classes([IsAuthenticated])
-@parser_classes([MultiPartParser, FormParser])
-def edit_profile(request):
-   user = request.user
-   profile = user.profile
-   if request.data['first_name'] != profile.first_name and request.data['first_name'] != "":
-      profile.first_name = request.data['first_name']
-      profile.save(update_fields=['first_name'])
-   if request.data['last_name'] != profile.last_name and request.data['last_name'] != "":
-      profile.last_name = request.data['last_name']
-      profile.save(update_fields=['last_name'])
-   if request.data['profile_picture'] != "":
-      profile.profile_picture = request.data['profile_picture']
-      profile.save(update_fields=['profile_picture'])
-   if request.data['profile_bio'] != profile.profile_bio:
-      profile.profile_bio = request.data['profile_bio']
-      profile.save(update_fields=['profile_bio'])
-   edit_profile_serialized = ProfileSerializer(profile)
-   return Response(edit_profile_serialized.data)
 
 
 @api_view(['PUT'])
@@ -350,6 +328,22 @@ def edit_profile_bio(request):
    if request.data['profile_bio'] != "":
       profile.profile_bio = request.data['profile_bio']
       profile.save(update_fields=['profile_bio'])
+   edit_profile_serialized = ProfileSerializer(profile)
+   return Response(edit_profile_serialized.data)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def edit_profile_name(request):
+   user = request.user
+   profile = user.profile
+   if request.data['first_name'] != profile.first_name and request.data['first_name'] != "":
+      profile.first_name = request.data['first_name']
+      profile.save(update_fields=['first_name'])
+   if request.data['last_name'] != profile.last_name and request.data['last_name'] != "":
+      profile.last_name = request.data['last_name']
+      profile.save(update_fields=['last_name'])
    edit_profile_serialized = ProfileSerializer(profile)
    return Response(edit_profile_serialized.data)
 
