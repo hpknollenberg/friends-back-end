@@ -376,7 +376,9 @@ def get_comments(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_messages(request):
-   messages = Message.objects.all().order_by('created_at')
+   count = int(request.GET.get('count'))
+   print(count)
+   messages = Message.objects.all().order_by('-created_at')[:count]
    messages_serialized = MessageSerializer(messages, many=True)
    return Response(messages_serialized.data)
 
