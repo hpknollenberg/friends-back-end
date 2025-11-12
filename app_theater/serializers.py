@@ -8,9 +8,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer(many=False)
+    
     class Meta:
         model = Profile
-        fields = ['id', 'first_name', 'last_name', 'profile_picture', 'bio', 'is_admin']
+        fields = ['id', 'user', 'first_name', 'last_name', 'profile_picture', 'profile_bio', 'is_admin']
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -55,17 +57,16 @@ class VoteSerializer(serializers.ModelSerializer):
         fields = ['id', 'profile', 'poll']
 
 
-class DiscussionSerializer(serializers.ModelSerializer):
+class MessageSerializer(serializers.ModelSerializer):
     author = ProfileSerializer(many=False, read_only=True)
 
     class Meta:
-        model = Discussion
-        fields = ['id', 'author', 'name', 'description', 'image', 'created_at']
+        model = Message
+        fields = ['id', 'author', 'content', 'image', 'created_at']
 
 
 class CommentSerializer(serializers.ModelSerializer):
     author = ProfileSerializer(many=False, read_only=True)
-    discussion = DiscussionSerializer(many=False, read_only=True)
     likes_count = serializers.IntegerField(source='likes.count')
 
     class Meta:

@@ -20,7 +20,7 @@ class VoteAdmin(admin.ModelAdmin):
 class FilmAdmin(admin.ModelAdmin):
     pass
 
-class DiscussionAdmin(admin.ModelAdmin):
+class MessageAdmin(admin.ModelAdmin):
     pass
 
 class CommentAdmin(admin.ModelAdmin):
@@ -44,7 +44,7 @@ admin.site.register(Poll, PollAdmin)
 admin.site.register(Choice, ChoiceAdmin)
 admin.site.register(Vote, VoteAdmin)
 admin.site.register(Film, FilmAdmin)
-admin.site.register(Discussion, DiscussionAdmin)
+admin.site.register(Message, MessageAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(MenuItem, MenuItemAdmin)
 admin.site.register(SpecificTime, SpecificTimeAdmin)

@@ -10,29 +10,8 @@ from .models import *
 from .serializers import *
 
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def create_comment(request):
-   Comment.objects.create(
-      author = Profile.objects.get(id=request.data['author']),
-      content = request.data['content'],
-      discussion = Discussion.objects.get(id=request.data['discussion']),
-   )
-   return Response()
 
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-@parser_classes([MultiPartParser, FormParser])
-def create_discussion(request):
-   if request.data['is_admin'] == 'true':
-      Discussion.objects.create(
-         author = Profile.objects.get(id=request.data['author']),
-         name = request.data['name'],
-         description = request.data['description'],
-         image = request.data['image']
-      )
-      return Response()
 
 
 @api_view(['POST'])
@@ -75,6 +54,19 @@ def create_menu_item(request):
          price = request.data['price']
       )
       return Response()
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def create_message(request):
+   message = Message.objects.create(
+      author = Profile.objects.get(id=request.data['author']),
+      content = request.data['content'],
+      image = request.data['image']
+   )
+   message_serialized = MessageSerializer(message, many=False)
+   return Response(message_serialized.data)
 
 
 @api_view(['POST'])
@@ -173,15 +165,6 @@ def delete_comment(request):
    comment = Comment.objects.get(id=request.data['comment'])
    comment.delete()
    return Response()
-      
-
-@api_view(['DELETE'])
-@permission_classes([IsAuthenticated])
-def delete_discussion(request):
-   if request.data['is_admin'] == True:
-      discussion = Discussion.objects.get(id=request.data['discussion'])
-      discussion.delete()
-      return Response()
    
 
 @api_view(['DELETE'])
@@ -210,6 +193,15 @@ def delete_menu_item(request):
       menu_item = MenuItem.objects.get(id=request.data['menu_item'])
       menu_item.delete()
       return Response()
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_message(request):
+   message = Message.objects.get(id=request.data['message'])
+   message.delete()
+   message_serialized = MessageSerializer(message, many=False)
+   return Response(message_serialized.data)
 
 
 @api_view(['DELETE'])
@@ -317,25 +309,60 @@ def edit_post(request):
         post.save(update_fields=['image'])
       edit_post_serialized = PostSerializer(post)
       return Response(edit_post_serialized.data)
-   
+
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 @parser_classes([MultiPartParser, FormParser])
-def edit_profile(request):
+def edit_profile_bio(request):
+   user = request.user
+   profile = user.profile
+   if request.data['profile_bio'] != "":
+      profile.profile_bio = request.data['profile_bio']
+      profile.save(update_fields=['profile_bio'])
+   edit_profile_serialized = ProfileSerializer(profile)
+   return Response(edit_profile_serialized.data)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def edit_profile_name(request):
    user = request.user
    profile = user.profile
    if request.data['first_name'] != profile.first_name and request.data['first_name'] != "":
       profile.first_name = request.data['first_name']
+      profile.save(update_fields=['first_name'])
    if request.data['last_name'] != profile.last_name and request.data['last_name'] != "":
       profile.last_name = request.data['last_name']
+      profile.save(update_fields=['last_name'])
+   edit_profile_serialized = ProfileSerializer(profile)
+   return Response(edit_profile_serialized.data)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def edit_profile_picture(request):
+   user = request.user
+   profile = user.profile
    if request.data['profile_picture'] != "":
       profile.profile_picture = request.data['profile_picture']
       profile.save(update_fields=['profile_picture'])
-   if request.data['bio'] != profile.bio:
-      profile.bio = request.data['bio']
    edit_profile_serialized = ProfileSerializer(profile)
    return Response(edit_profile_serialized.data)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def edit_username(request):
+   user = request.user
+   if request.data['username'] != "" and request.data['username'] != user.username:
+      user.username = request.data['username']
+      user.save(update_fields=['username'])
+   edit_user_serialized = UserSerializer(user)
+   return Response(edit_user_serialized.data)
    
 
 @api_view(['GET'])
@@ -348,10 +375,12 @@ def get_comments(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_discussions(request):
-   discussions = Discussion.objects.all().order_by('-created_at')
-   discussions_serialized = DiscussionSerializer(discussions, many=True)
-   return Response(discussions_serialized.data)
+def get_messages(request):
+   count = int(request.GET.get('count'))
+   print(count)
+   messages = Message.objects.all().order_by('-created_at')[:count]
+   messages_serialized = MessageSerializer(messages, many=True)
+   return Response(messages_serialized.data)
 
 
 @api_view(['GET'])
